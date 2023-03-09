@@ -32,6 +32,7 @@ import com.google.cloud.bigtable.data.v2.models.RowMutation;
 import com.google.protobuf.ByteString;
 import javax.annotation.Nullable;
 import org.joda.time.Instant;
+import org.apache.beam.sdk.annotations.Internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * identify itself which is used as the row prefix.
  */
 @SuppressWarnings({"UnusedVariable", "UnusedMethod"})
+@Internal
 public class MetadataTableDao {
   private static final Logger LOG = LoggerFactory.getLogger(MetadataTableDao.class);
 

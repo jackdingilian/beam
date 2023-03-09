@@ -21,13 +21,13 @@ import com.google.auto.service.AutoService;
 import java.util.List;
 import java.util.Objects;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.beam.sdk.coders.AvroCoder;
+import org.apache.beam.sdk.extensions.avro.coders.AvroCoder;
+import org.apache.beam.sdk.extensions.avro.schemas.utils.AvroUtils;
 import org.apache.beam.sdk.schemas.Schema;
 import org.apache.beam.sdk.schemas.transforms.Convert;
 import org.apache.beam.sdk.schemas.transforms.SchemaTransform;
 import org.apache.beam.sdk.schemas.transforms.SchemaTransformProvider;
 import org.apache.beam.sdk.schemas.transforms.TypedSchemaTransformProvider;
-import org.apache.beam.sdk.schemas.utils.AvroUtils;
 import org.apache.beam.sdk.schemas.utils.JsonUtils;
 import org.apache.beam.sdk.transforms.MapElements;
 import org.apache.beam.sdk.transforms.PTransform;
@@ -114,11 +114,11 @@ public class KafkaReadSchemaTransformProvider
             : "To read from Kafka, a schema must be provided directly or though Confluent "
                 + "Schema Registry, but not both.";
         final Schema beamSchema =
-            Objects.equals(configuration.getDataFormat(), "JSON")
+            Objects.equals(configuration.getFormat(), "JSON")
                 ? JsonUtils.beamSchemaFromJsonSchema(inputSchema)
                 : AvroUtils.toBeamSchema(new org.apache.avro.Schema.Parser().parse(inputSchema));
         SerializableFunction<byte[], Row> valueMapper =
-            Objects.equals(configuration.getDataFormat(), "JSON")
+            Objects.equals(configuration.getFormat(), "JSON")
                 ? JsonUtils.getJsonBytesToRowFunction(beamSchema)
                 : AvroUtils.getAvroBytesToRowFunction(beamSchema);
         return new PTransform<PCollectionRowTuple, PCollectionRowTuple>() {

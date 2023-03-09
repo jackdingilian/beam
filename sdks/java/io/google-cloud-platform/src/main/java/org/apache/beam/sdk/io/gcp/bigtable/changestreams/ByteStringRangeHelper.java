@@ -23,9 +23,11 @@ import com.google.protobuf.TextFormat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.apache.beam.sdk.annotations.Internal;
 import org.apache.beam.vendor.guava.v26_0_jre.com.google.common.annotations.VisibleForTesting;
 
 /** Helper functions to evaluate the completeness of collection of ByteStringRanges. */
+@Internal
 public class ByteStringRangeHelper {
   /**
    * Returns formatted string of a partition for debugging.

@@ -18,7 +18,10 @@
 package org.apache.beam.sdk.io.gcp.bigtable.changestreams.action;
 
 import com.google.cloud.bigtable.data.v2.models.Range.ByteStringRange;
+import com.google.cloud.Timestamp;
 import java.util.List;
+import javax.annotation.Nullable;
+import org.apache.beam.sdk.annotations.Internal;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.ChangeStreamMetrics;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.TimestampConverter;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.UniqueIdGenerator;
@@ -37,6 +40,8 @@ import org.slf4j.LoggerFactory;
  * Class to generate first set of outputs for {@link
  * org.apache.beam.sdk.io.gcp.bigtable.changestreams.dofn.DetectNewPartitionsDoFn}.
  */
+@SuppressWarnings({"UnusedVariable", "UnusedMethod"})
+@Internal
 public class GenerateInitialPartitionsAction {
   private static final Logger LOG = LoggerFactory.getLogger(GenerateInitialPartitionsAction.class);
 

@@ -29,6 +29,7 @@ import com.google.cloud.bigtable.data.v2.models.ReadChangeStreamQuery;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import org.apache.beam.sdk.annotations.Internal;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.model.PartitionRecord;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.restriction.StreamProgress;
 import org.joda.time.Duration;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 /** Data access object to list and read stream partitions of a table. */
 @SuppressWarnings({"UnusedVariable", "UnusedMethod"})
+@Internal
 public class ChangeStreamDao {
   private static final Logger LOG = LoggerFactory.getLogger(ChangeStreamDao.class);
 

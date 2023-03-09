@@ -18,11 +18,13 @@
 package org.apache.beam.sdk.io.gcp.bigtable.changestreams;
 
 import java.io.Serializable;
+import org.apache.beam.sdk.annotations.Internal;
 import org.apache.beam.sdk.metrics.Counter;
 import org.apache.beam.sdk.metrics.Distribution;
 import org.apache.beam.sdk.metrics.Metrics;
 
 /** Class to aggregate metrics related functionality. */
+@Internal
 public class ChangeStreamMetrics implements Serializable {
   private static final long serialVersionUID = 7298901109362981596L;
   // ------------------------
