@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import org.apache.beam.runners.core.construction.PTransformMatchers;
 import org.apache.beam.runners.core.construction.ReplacementOutputs;
 import org.apache.beam.sdk.io.Read;
@@ -77,12 +76,7 @@ public class SubscribeTransform extends PTransform<PBegin, PCollection<Sequenced
     try {
       return new SubscriberAssembler(options, partition)
           .getSubscriberFactory(initialOffset)
-          .newSubscriber(
-              messages ->
-                  consumer.accept(
-                      messages.stream()
-                          .map(message -> message.toProto())
-                          .collect(Collectors.toList())));
+          .newSubscriber(consumer::accept);
     } catch (Throwable t) {
       throw toCanonical(t).underlying;
     }

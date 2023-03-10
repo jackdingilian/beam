@@ -19,11 +19,11 @@ package org.apache.beam.sdk.io.gcp.bigtable.changestreams.restriction;
 
 import com.google.cloud.bigtable.data.v2.models.ChangeStreamContinuationToken;
 import com.google.cloud.bigtable.data.v2.models.CloseStream;
-import com.google.protobuf.Timestamp;
 import java.io.Serializable;
 import java.util.Objects;
 import org.apache.beam.sdk.annotations.Internal;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.joda.time.Instant;
 
 /**
  * Position for {@link ReadChangeStreamPartitionProgressTracker}. This represents contains
@@ -41,14 +41,14 @@ public class StreamProgress implements Serializable {
 
   private @Nullable ChangeStreamContinuationToken currentToken;
   private @Nullable CloseStream closeStream;
-  private @Nullable Timestamp lowWatermark;
+  private @Nullable Instant estimatedLowWatermark;
 
   public @Nullable ChangeStreamContinuationToken getCurrentToken() {
     return currentToken;
   }
 
-  public @Nullable Timestamp getLowWatermark() {
-    return lowWatermark;
+  public @Nullable Instant getEstimatedLowWatermark() {
+    return estimatedLowWatermark;
   }
 
   public @Nullable CloseStream getCloseStream() {
@@ -57,9 +57,10 @@ public class StreamProgress implements Serializable {
 
   public StreamProgress() {}
 
-  public StreamProgress(@Nullable ChangeStreamContinuationToken token, Timestamp lowWatermark) {
+  public StreamProgress(
+      @Nullable ChangeStreamContinuationToken token, Instant estimatedLowWatermark) {
     this.currentToken = token;
-    this.lowWatermark = lowWatermark;
+    this.estimatedLowWatermark = estimatedLowWatermark;
   }
 
   public StreamProgress(@Nullable CloseStream closeStream) {
@@ -76,7 +77,7 @@ public class StreamProgress implements Serializable {
     }
     StreamProgress that = (StreamProgress) o;
     return Objects.equals(getCurrentToken(), that.getCurrentToken())
-        && Objects.equals(getLowWatermark(), that.getLowWatermark())
+        && Objects.equals(getEstimatedLowWatermark(), that.getEstimatedLowWatermark())
         && Objects.equals(getCloseStream(), that.getCloseStream());
   }
 
@@ -90,8 +91,8 @@ public class StreamProgress implements Serializable {
     return "StreamProgress{"
         + "currentToken="
         + currentToken
-        + ", lowWatermark="
-        + lowWatermark
+        + ", estimatedLowWatermark="
+        + estimatedLowWatermark
         + ", closeStream="
         + closeStream
         + '}';

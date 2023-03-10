@@ -28,7 +28,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.api.gax.rpc.ServerStream;
-import com.google.cloud.Timestamp;
 import com.google.cloud.bigtable.data.v2.models.ChangeStreamContinuationToken;
 import com.google.cloud.bigtable.data.v2.models.ChangeStreamMutation;
 import com.google.cloud.bigtable.data.v2.models.ChangeStreamRecord;
@@ -82,15 +81,11 @@ public class ReadChangeStreamPartitionActionTest {
     changeStreamDao = mock(ChangeStreamDao.class);
     metrics = mock(ChangeStreamMetrics.class);
     changeStreamAction = mock(ChangeStreamAction.class);
-    Duration heartbeatDurationSeconds = Duration.standardSeconds(1);
+    Duration heartbeatDuration = Duration.standardSeconds(1);
 
     action =
         new ReadChangeStreamPartitionAction(
-            metadataTableDao,
-            changeStreamDao,
-            metrics,
-            changeStreamAction,
-            heartbeatDurationSeconds);
+            metadataTableDao, changeStreamDao, metrics, changeStreamAction, heartbeatDuration);
 
     restriction = mock(StreamProgress.class);
     tracker = mock(ReadChangeStreamPartitionProgressTracker.class);
@@ -99,8 +94,8 @@ public class ReadChangeStreamPartitionActionTest {
 
     partition = ByteStringRange.create("A", "B");
     uuid = "123456";
-    Timestamp startTime = Timestamp.now();
-    Timestamp parentLowWatermark = Timestamp.now();
+    Instant startTime = Instant.now();
+    Instant parentLowWatermark = Instant.now();
     partitionRecord = new PartitionRecord(partition, startTime, uuid, parentLowWatermark);
     when(tracker.currentRestriction()).thenReturn(restriction);
     when(restriction.getCurrentToken()).thenReturn(null);
@@ -176,9 +171,9 @@ public class ReadChangeStreamPartitionActionTest {
   @Test
   public void testCloseStreamWritesContinuationTokens() throws IOException {
     ChangeStreamContinuationToken changeStreamContinuationToken1 =
-        new ChangeStreamContinuationToken(ByteStringRange.create("A", "AJ"), "1234");
+        ChangeStreamContinuationToken.create(ByteStringRange.create("A", "AJ"), "1234");
     ChangeStreamContinuationToken changeStreamContinuationToken2 =
-        new ChangeStreamContinuationToken(ByteStringRange.create("AJ", "B"), "5678");
+        ChangeStreamContinuationToken.create(ByteStringRange.create("AJ", "B"), "5678");
 
     CloseStream mockCloseStream = Mockito.mock(CloseStream.class);
     Status statusProto = Status.newBuilder().setCode(11).build();

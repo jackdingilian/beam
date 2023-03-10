@@ -90,10 +90,10 @@ public class MetadataTableDaoTest {
     ByteStringRange parentPartition = ByteStringRange.create("", "");
     ByteStringRange partition1 = ByteStringRange.create("", "a");
     ChangeStreamContinuationToken changeStreamContinuationToken1 =
-        new ChangeStreamContinuationToken(partition1, "tk1");
+        ChangeStreamContinuationToken.create(partition1, "tk1");
     ByteStringRange partition2 = ByteStringRange.create("a", "");
     ChangeStreamContinuationToken changeStreamContinuationToken2 =
-        new ChangeStreamContinuationToken(partition2, "tk2");
+        ChangeStreamContinuationToken.create(partition2, "tk2");
 
     Instant lowWatermark = Instant.now();
     metadataTableDao.writeNewPartition(
@@ -128,7 +128,7 @@ public class MetadataTableDaoTest {
   public void testUpdateWatermark() {
     ByteStringRange partition = ByteStringRange.create("a", "b");
     Instant watermark = Instant.now();
-    ChangeStreamContinuationToken token = new ChangeStreamContinuationToken(partition, "1234");
+    ChangeStreamContinuationToken token = ChangeStreamContinuationToken.create(partition, "1234");
     metadataTableDao.updateWatermark(partition, watermark, token);
     Row row =
         dataClient.readRow(

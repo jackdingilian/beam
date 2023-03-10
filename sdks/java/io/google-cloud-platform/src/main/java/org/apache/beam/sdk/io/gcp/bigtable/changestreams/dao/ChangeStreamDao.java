@@ -18,9 +18,9 @@
 package org.apache.beam.sdk.io.gcp.bigtable.changestreams.dao;
 
 import static org.apache.beam.sdk.io.gcp.bigtable.changestreams.ByteStringRangeHelper.formatByteStringRange;
+import static org.apache.beam.sdk.io.gcp.bigtable.changestreams.TimestampConverter.toThreetenInstant;
 
 import com.google.api.gax.rpc.ServerStream;
-import com.google.cloud.Timestamp;
 import com.google.cloud.bigtable.data.v2.BigtableDataClient;
 import com.google.cloud.bigtable.data.v2.models.ChangeStreamContinuationToken;
 import com.google.cloud.bigtable.data.v2.models.ChangeStreamRecord;
@@ -33,6 +33,7 @@ import org.apache.beam.sdk.annotations.Internal;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.model.PartitionRecord;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.restriction.StreamProgress;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,34 +65,34 @@ public class ChangeStreamDao {
    *
    * @param partition the partition to stream
    * @param streamProgress may contain a continuation token for the stream request\
-   * @param heartbeatDurationSeconds period between heartbeat messages
+   * @param heartbeatDuration period between heartbeat messages
    * @return stream of ReadChangeStreamResponse
    * @throws IOException if the stream could not be started
    */
   public ServerStream<ChangeStreamRecord> readChangeStreamPartition(
       PartitionRecord partition,
       StreamProgress streamProgress,
-      Duration heartbeatDurationSeconds,
+      Duration heartbeatDuration,
       boolean shouldDebug)
       throws IOException {
     ReadChangeStreamQuery query =
         ReadChangeStreamQuery.create(tableId).streamPartition(partition.getPartition());
 
     ChangeStreamContinuationToken currentToken = streamProgress.getCurrentToken();
-    Timestamp startTime = partition.getStartTime();
+    Instant startTime = partition.getStartTime();
     List<ChangeStreamContinuationToken> changeStreamContinuationTokenList =
         partition.getChangeStreamContinuationTokens();
     if (currentToken != null) {
       query.continuationTokens(Collections.singletonList(currentToken));
     } else if (startTime != null) {
       // Check if tracker has Continuation Token
-      query.startTime(startTime.toProto());
+      query.startTime(toThreetenInstant(startTime));
     } else if (changeStreamContinuationTokenList != null) {
       query.continuationTokens(changeStreamContinuationTokenList);
     } else {
       throw new IOException("Something went wrong");
     }
-    query.heartbeatDuration(heartbeatDurationSeconds.getStandardSeconds());
+    query.heartbeatDuration(org.threeten.bp.Duration.ofMillis(heartbeatDuration.getMillis()));
     if (shouldDebug) {
       LOG.info(
           "RCSP {} ReadChangeStreamRequest: {}",
