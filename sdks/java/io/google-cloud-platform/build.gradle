@@ -39,15 +39,6 @@ repositories {
     url "artifactregistry://us-central1-maven.pkg.dev/cloud-bigtable-ecosystem/bigtable-change-streams-preview"
   }
 }
-configurations.all {
-  resolutionStrategy {
-    force group: 'com.google.cloud', name: 'google-cloud-bigtable', version: '2.11.2-change-streams-preview1-SNAPSHOT'
-    force group: 'com.google.api.grpc', name: 'proto-google-cloud-bigtable-v2', version: '2.11.2-change-streams-preview1-SNAPSHOT'
-    force group: 'com.google.api.grpc', name: 'grpc-google-cloud-bigtable-v2', version: '2.11.2-change-streams-preview1-SNAPSHOT'
-    force group: 'com.google.api.grpc', name: 'proto-google-cloud-bigtable-admin-v2', version: '2.11.2-change-streams-preview1-SNAPSHOT'
-    force group: 'com.google.api.grpc', name: 'grpc-google-cloud-bigtable-admin-v2', version: '2.11.2-change-streams-preview1-SNAPSHOT'
-  }
-}
 
 description = "Apache Beam :: SDKs :: Java :: IO :: Google Cloud Platform"
 ext.summary = "IO library to read and write Google Cloud Platform systems from Beam."

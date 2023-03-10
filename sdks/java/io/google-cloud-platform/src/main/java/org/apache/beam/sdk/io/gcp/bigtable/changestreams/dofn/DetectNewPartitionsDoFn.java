@@ -19,7 +19,6 @@ package org.apache.beam.sdk.io.gcp.bigtable.changestreams.dofn;
 
 import java.io.IOException;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.ChangeStreamMetrics;
-import org.apache.beam.sdk.io.gcp.bigtable.changestreams.TimestampConverter;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.action.ActionFactory;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.action.DetectNewPartitionsAction;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.action.GenerateInitialPartitionsAction;
@@ -39,7 +38,7 @@ import org.joda.time.Instant;
 // Allows for detectNewPartitionsAction setup
 @SuppressWarnings("initialization.fields.uninitialized")
 @UnboundedPerElement
-public class DetectNewPartitionsDoFn extends DoFn<com.google.cloud.Timestamp, PartitionRecord> {
+public class DetectNewPartitionsDoFn extends DoFn<Instant, PartitionRecord> {
   private static final long serialVersionUID = 8052524268978107367L;
 
   private final DaoFactory daoFactory;
@@ -55,8 +54,8 @@ public class DetectNewPartitionsDoFn extends DoFn<com.google.cloud.Timestamp, Pa
   }
 
   @GetInitialWatermarkEstimatorState
-  public Instant getInitialWatermarkEstimatorState(@Element com.google.cloud.Timestamp startTime) {
-    return TimestampConverter.toInstant(startTime);
+  public Instant getInitialWatermarkEstimatorState(@Element Instant startTime) {
+    return startTime;
   }
 
   @NewWatermarkEstimator
@@ -94,7 +93,7 @@ public class DetectNewPartitionsDoFn extends DoFn<com.google.cloud.Timestamp, Pa
 
   @ProcessElement
   public ProcessContinuation processElement(
-      @Element com.google.cloud.Timestamp startTime,
+      @Element Instant startTime,
       RestrictionTracker<OffsetRange, Long> tracker,
       OutputReceiver<PartitionRecord> receiver,
       ManualWatermarkEstimator<Instant> watermarkEstimator,

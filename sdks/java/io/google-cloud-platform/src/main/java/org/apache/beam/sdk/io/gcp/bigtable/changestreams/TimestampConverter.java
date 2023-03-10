@@ -21,17 +21,11 @@ import org.joda.time.Instant;
 
 /** Convert between different Timestamp and Instant classes. */
 public class TimestampConverter {
-  public static Instant toInstant(com.google.cloud.Timestamp time) {
-    return Instant.ofEpochMilli(time.toDate().toInstant().toEpochMilli());
+  public static org.threeten.bp.Instant toThreetenInstant(Instant jodaInstant) {
+    return org.threeten.bp.Instant.ofEpochMilli(jodaInstant.getMillis());
   }
 
-  public static Instant toInstant(com.google.protobuf.Timestamp time) {
-    long epochMilli =
-        java.time.Instant.ofEpochSecond(time.getSeconds(), time.getNanos()).toEpochMilli();
-    return Instant.ofEpochMilli(epochMilli);
-  }
-
-  public static com.google.cloud.Timestamp toCloudTimestamp(Instant instant) {
-    return com.google.cloud.Timestamp.of(instant.toDate());
+  public static Instant toJodaTime(org.threeten.bp.Instant threetenInstant) {
+    return Instant.ofEpochMilli(threetenInstant.toEpochMilli());
   }
 }

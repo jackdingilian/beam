@@ -20,7 +20,6 @@ package org.apache.beam.sdk.io.gcp.bigtable.changestreams.action;
 import com.google.cloud.bigtable.data.v2.models.Range.ByteStringRange;
 import java.util.List;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.ChangeStreamMetrics;
-import org.apache.beam.sdk.io.gcp.bigtable.changestreams.TimestampConverter;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.UniqueIdGenerator;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.dao.ChangeStreamDao;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.model.PartitionRecord;
@@ -60,7 +59,7 @@ public class GenerateInitialPartitionsAction {
       OutputReceiver<PartitionRecord> receiver,
       RestrictionTracker<OffsetRange, Long> tracker,
       ManualWatermarkEstimator<Instant> watermarkEstimator,
-      com.google.cloud.Timestamp startTime) {
+      Instant startTime) {
     if (!tracker.tryClaim(0L)) {
       LOG.error(
           "Could not claim initial DetectNewPartition restriction. No partitions are outputted.");
@@ -69,7 +68,7 @@ public class GenerateInitialPartitionsAction {
     List<ByteStringRange> streamPartitions =
         changeStreamDao.generateInitialChangeStreamPartitions();
 
-    watermarkEstimator.setWatermark(TimestampConverter.toInstant(startTime));
+    watermarkEstimator.setWatermark(startTime);
 
     for (ByteStringRange partition : streamPartitions) {
       metrics.incListPartitionsCount();

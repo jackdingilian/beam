@@ -27,6 +27,7 @@ import com.google.cloud.bigtable.data.v2.models.ChangeStreamContinuationToken;
 import com.google.cloud.bigtable.data.v2.models.Filters;
 import com.google.cloud.bigtable.data.v2.models.Query;
 import com.google.cloud.bigtable.data.v2.models.Range;
+import com.google.cloud.bigtable.data.v2.models.Range.ByteStringRange;
 import com.google.cloud.bigtable.data.v2.models.Row;
 import com.google.cloud.bigtable.data.v2.models.RowMutation;
 import com.google.protobuf.ByteString;
@@ -95,8 +96,8 @@ public class MetadataTableDao {
    * @param partition convert to row key
    * @return row key to insert to Cloud Bigtable.
    */
-  public ByteString convertPartitionToStreamPartitionRowKey(Range.ByteStringRange partition) {
-    return getFullStreamPartitionPrefix().concat(Range.ByteStringRange.toByteString(partition));
+  public ByteString convertPartitionToStreamPartitionRowKey(ByteStringRange partition) {
+    return getFullStreamPartitionPrefix().concat(ByteStringRange.serializeToByteString(partition));
   }
 
   /**
@@ -106,8 +107,8 @@ public class MetadataTableDao {
    * @param partition convert to row key
    * @return row key to insert to Cloud Bigtable.
    */
-  public ByteString convertPartitionToNewPartitionRowKey(Range.ByteStringRange partition) {
-    return getFullNewPartitionPrefix().concat(Range.ByteStringRange.toByteString(partition));
+  public ByteString convertPartitionToNewPartitionRowKey(ByteStringRange partition) {
+    return getFullNewPartitionPrefix().concat(ByteStringRange.serializeToByteString(partition));
   }
 
   /**
@@ -141,7 +142,7 @@ public class MetadataTableDao {
     writeNewPartition(
         changeStreamContinuationToken.getPartition(),
         changeStreamContinuationToken.toByteString(),
-        Range.ByteStringRange.toByteString(parentPartition),
+        ByteStringRange.serializeToByteString(parentPartition),
         lowWatermark);
   }
 

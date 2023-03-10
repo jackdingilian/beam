@@ -21,7 +21,6 @@ import com.google.cloud.bigtable.data.v2.models.ChangeStreamMutation;
 import com.google.protobuf.ByteString;
 import java.io.IOException;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.ChangeStreamMetrics;
-import org.apache.beam.sdk.io.gcp.bigtable.changestreams.TimestampConverter;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.action.ActionFactory;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.action.ChangeStreamAction;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.action.ReadChangeStreamPartitionAction;
@@ -51,7 +50,7 @@ public class ReadChangeStreamPartitionDoFn
 
   private static final Logger LOG = LoggerFactory.getLogger(ReadChangeStreamPartitionDoFn.class);
 
-  private final Duration heartbeatDurationSeconds;
+  private final Duration heartbeatDuration;
   private final DaoFactory daoFactory;
   private final ChangeStreamMetrics metrics;
   private final ActionFactory actionFactory;
@@ -59,11 +58,11 @@ public class ReadChangeStreamPartitionDoFn
   private ReadChangeStreamPartitionAction readChangeStreamPartitionAction;
 
   public ReadChangeStreamPartitionDoFn(
-      Duration heartbeatDurationSeconds,
+      Duration heartbeatDuration,
       DaoFactory daoFactory,
       ActionFactory actionFactory,
       ChangeStreamMetrics metrics) {
-    this.heartbeatDurationSeconds = heartbeatDurationSeconds;
+    this.heartbeatDuration = heartbeatDuration;
     this.daoFactory = daoFactory;
     this.metrics = metrics;
     this.actionFactory = actionFactory;
@@ -71,7 +70,7 @@ public class ReadChangeStreamPartitionDoFn
 
   @GetInitialWatermarkEstimatorState
   public Instant getInitialWatermarkEstimatorState(@Element PartitionRecord partitionRecord) {
-    return TimestampConverter.toInstant(partitionRecord.getParentLowWatermark());
+    return partitionRecord.getParentLowWatermark();
   }
 
   @NewWatermarkEstimator
@@ -99,11 +98,7 @@ public class ReadChangeStreamPartitionDoFn
     ChangeStreamAction changeStreamAction = actionFactory.changeStreamAction(this.metrics);
     readChangeStreamPartitionAction =
         actionFactory.readChangeStreamPartitionAction(
-            metadataTableDao,
-            changeStreamDao,
-            metrics,
-            changeStreamAction,
-            heartbeatDurationSeconds);
+            metadataTableDao, changeStreamDao, metrics, changeStreamAction, heartbeatDuration);
   }
 
   @ProcessElement

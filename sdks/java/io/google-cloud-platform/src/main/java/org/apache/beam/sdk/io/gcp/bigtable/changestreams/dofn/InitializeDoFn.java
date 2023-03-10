@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import org.apache.beam.sdk.io.gcp.bigtable.changestreams.dao.DaoFactory;
 import org.apache.beam.sdk.transforms.DoFn;
+import org.joda.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,27 +29,24 @@ import org.slf4j.LoggerFactory;
  * A DoFn responsible to initialize the metadata table and prepare it for managing the state of the
  * pipeline.
  */
-public class InitializeDoFn extends DoFn<byte[], com.google.cloud.Timestamp>
-    implements Serializable {
+@SuppressWarnings("UnusedVariable")
+public class InitializeDoFn extends DoFn<byte[], Instant> implements Serializable {
   private static final long serialVersionUID = 1868189906451252363L;
 
   private static final Logger LOG = LoggerFactory.getLogger(InitializeDoFn.class);
   private final DaoFactory daoFactory;
   private final String metadataTableAppProfileId;
-  private com.google.cloud.Timestamp startTime;
+  private Instant startTime;
 
   public InitializeDoFn(
-      DaoFactory daoFactory,
-      String metadataTableAppProfileId,
-      com.google.cloud.Timestamp startTime) {
+      DaoFactory daoFactory, String metadataTableAppProfileId, Instant startTime) {
     this.daoFactory = daoFactory;
     this.metadataTableAppProfileId = metadataTableAppProfileId;
     this.startTime = startTime;
   }
 
   @ProcessElement
-  public void processElement(OutputReceiver<com.google.cloud.Timestamp> receiver)
-      throws IOException {
+  public void processElement(OutputReceiver<Instant> receiver) throws IOException {
     LOG.info(daoFactory.getStreamTableDebugString());
     LOG.info(daoFactory.getMetadataTableDebugString());
     LOG.info("ChangeStreamName: " + daoFactory.getChangeStreamName());
